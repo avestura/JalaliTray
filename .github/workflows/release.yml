@@ -1,0 +1,50 @@
+name: Release
+
+# Push a tag like v1.2.0 to build the app and publish it on the Releases page.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Compute version
+        id: v
+        shell: bash
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish (framework-dependent, small)
+        shell: bash
+        run: >
+          dotnet publish src/JalaliTray -c Release -r win-x64 --self-contained false
+          -p:PublishSingleFile=true -p:Version=${{ steps.v.outputs.version }} -o out/fdd
+
+      - name: Publish (self-contained)
+        shell: bash
+        run: >
+          dotnet publish src/JalaliTray -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:Version=${{ steps.v.outputs.version }} -o out/sc
+
+      - name: Collect assets
+        shell: bash
+        run: |
+          mkdir dist
+          cp out/fdd/JalaliTray.exe dist/JalaliTray-win-x64.exe
+          cp out/sc/JalaliTray.exe dist/JalaliTray-win-x64-self-contained.exe
+
+      - name: Create GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.exe --title "$GITHUB_REF_NAME" --generate-notes
