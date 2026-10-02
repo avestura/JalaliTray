@@ -17,14 +17,62 @@
             <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
         </Style>
         <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource Fg}"/>
             <Setter Property="Margin" Value="0,6,0,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Background="Transparent" SnapsToDevicePixels="True">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="Box" Width="18" Height="18" Margin="0,2,0,0" VerticalAlignment="Top"
+                                    BorderThickness="1.5" BorderBrush="{DynamicResource Muted}" Background="Transparent">
+                                <!-- Never mirrored: the check mark must look the same in RTL -->
+                                <Grid FlowDirection="LeftToRight">
+                                    <Path x:Name="Mark" Data="M3,8 L6.5,11.5 L12.5,4.5" Visibility="Collapsed"
+                                          Stroke="{DynamicResource OnAccent}" StrokeThickness="2"
+                                          StrokeStartLineCap="Square" StrokeEndLineCap="Square" StrokeLineJoin="Miter"/>
+                                </Grid>
+                            </Border>
+                            <TextBlock Grid.Column="2" Text="{TemplateBinding Content}" TextWrapping="Wrap" VerticalAlignment="Center"
+                                       Foreground="{TemplateBinding Foreground}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Fg}"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Box" Property="Background" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource Accent}"/>
+                                <Setter TargetName="Mark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
     <DockPanel Margin="16">
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-            <Button x:Name="SaveBtn" Content="{local:Loc save}" MinWidth="88" Margin="0,0,8,0" IsDefault="True"/>
-            <Button x:Name="CancelBtn" Content="{local:Loc cancel}" MinWidth="88" IsCancel="True"/>
-        </StackPanel>
+        <!-- Physical order is always Save then Cancel from the left; column placement is set in code. -->
+        <Grid x:Name="Footer" DockPanel.Dock="Bottom" FlowDirection="LeftToRight" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="SaveBtn" Grid.Column="0" Content="{local:Loc save}" MinWidth="88" Margin="0,0,8,0" IsDefault="True"/>
+            <Button x:Name="CancelBtn" Grid.Column="1" Content="{local:Loc cancel}" MinWidth="88" IsCancel="True"/>
+        </Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock Style="{StaticResource Section}" Text="{local:Loc sec.general}" Margin="0,0,0,8"/>
@@ -69,9 +117,6 @@
                 <ComboBox x:Name="HijriBox" SelectedItem="{Binding HijriOffset, Mode=TwoWay}" Width="80" HorizontalAlignment="Left"/>
 
                 <TextBlock Style="{StaticResource Section}" Text="{local:Loc sec.events}"/>
-                <TextBlock Style="{StaticResource Label}" Text="{local:Loc api.key}" Margin="0,0,0,4"/>
-                <TextBox Text="{Binding ApiKey, Mode=TwoWay}" FlowDirection="LeftToRight"/>
-                <TextBlock Text="{local:Loc api.hint}" FontSize="11" Foreground="{DynamicResource Muted}" Margin="0,4,0,0" TextWrapping="Wrap"/>
                 <CheckBox Content="{local:Loc ev.holiday}" IsChecked="{Binding ShowHolidays, Mode=TwoWay}"/>
                 <CheckBox Content="{local:Loc ev.religious}" IsChecked="{Binding ShowReligious, Mode=TwoWay}"/>
                 <CheckBox Content="{local:Loc ev.national}" IsChecked="{Binding ShowNational, Mode=TwoWay}"/>

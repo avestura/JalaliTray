@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace JalaliTray;
@@ -17,10 +18,28 @@ public partial class SettingsWindow : Window
         FontBox.ItemsSource = Fonts.SystemFontFamilies.Select(f => f.Source).OrderBy(s => s).ToList();
         HijriBox.ItemsSource = new[] { -2, -1, 0, 1, 2 };
         DataContext = _copy;
+        PlaceFooter();
 
         SaveBtn.Click += (_, _) => Save();
         CancelBtn.Click += (_, _) => Close();
         TestBtn.Click += async (_, _) => await TestNtp();
+    }
+
+    // Save is always physically left of Cancel. The pair hugs the start edge of the window
+    // (left in RTL, right in LTR) like standard Windows dialogs.
+    void PlaceFooter()
+    {
+        var cols = Footer.ColumnDefinitions;
+        if (L.IsFa)
+        {
+            cols[0].Width = GridLength.Auto; cols[1].Width = GridLength.Auto; cols[2].Width = new GridLength(1, GridUnitType.Star);
+            Grid.SetColumn(SaveBtn, 0); Grid.SetColumn(CancelBtn, 1);
+        }
+        else
+        {
+            cols[0].Width = new GridLength(1, GridUnitType.Star); cols[1].Width = GridLength.Auto; cols[2].Width = GridLength.Auto;
+            Grid.SetColumn(SaveBtn, 1); Grid.SetColumn(CancelBtn, 2);
+        }
     }
 
     void Save()

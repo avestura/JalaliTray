@@ -12,12 +12,14 @@ namespace JalaliTray;
 
 public partial class CalendarWindow : Window
 {
+    internal static bool KeepOpen;
     int _viewYear, _viewMonth;
     DateTime _selected;
     DateTime _today;
     CancellationTokenSource? _cts;
     readonly DispatcherTimer _clock = new() { Interval = TimeSpan.FromSeconds(1) };
     bool _closing;
+    readonly System.Collections.Generic.HashSet<(int, int)> _prefetched = new();
 
     public CalendarWindow()
     {
@@ -51,12 +53,15 @@ public partial class CalendarWindow : Window
         NextBtn.Click += (_, _) => Navigate(1);
         TodayBtn.Click += (_, _) => GoToday();
         SettingsBtn.Click += (_, _) => Program.Tray.OpenSettings();
+        ConverterBtn.Click += (_, _) => Program.Tray.OpenConverter();
+        SettingsBtn.ToolTip = L.T("menu.settings");
+        ConverterBtn.ToolTip = L.T("menu.converter");
 
         PreviewMouseWheel += (_, e) => { Navigate(e.Delta > 0 ? -1 : 1); e.Handled = true; };
         KeyDown += (_, e) => { if (e.Key == Key.Escape) Close(); };
 
         Loaded += (_, _) => Position();
-        Deactivated += (_, _) => { if (!_closing) Close(); };
+        Deactivated += (_, _) => { if (!_closing && !KeepOpen) Close(); };
         Closing += (_, _) => _closing = true;
         Closed += (_, _) => { _clock.Stop(); _cts?.Cancel(); };
 
@@ -127,6 +132,18 @@ public partial class CalendarWindow : Window
             else DaysGrid.Children.Add(MakeCell(first.AddDays(i - lead), i - lead + 1));
         }
         LoadEvents();
+        _ = PrefetchMonthAsync(first);
+    }
+
+    // Fetch the whole visible month once so holidays show in the grid, then redraw.
+    async System.Threading.Tasks.Task PrefetchMonthAsync(DateTime first)
+    {
+        var view = (_viewYear, _viewMonth);
+        if (Program.Events.HasFreshMonth(first) || !_prefetched.Add(view)) return;
+        bool ok;
+        try { ok = await Program.Events.EnsureMonthAsync(first, CancellationToken.None); }
+        catch { return; }
+        if (ok && !_closing && view == (_viewYear, _viewMonth)) Render();
     }
 
     UIElement MakeCell(DateTime date, int jalaliDay)

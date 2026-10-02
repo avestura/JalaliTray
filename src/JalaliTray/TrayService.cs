@@ -12,6 +12,7 @@ public sealed class TrayService : IDisposable
     DispatcherTimer _timer = null!;
     CalendarWindow? _flyout;
     SettingsWindow? _settings;
+    ConverterWindow? _converter;
     DateTime _lastClosedUtc = DateTime.MinValue;
     DateTime _renderedDay = DateTime.MinValue;
     DateTime _lastNtpAttemptUtc = DateTime.MinValue;
@@ -100,6 +101,7 @@ public sealed class TrayService : IDisposable
         _notify.ContextMenuStrip?.Dispose();
         var menu = new ContextMenuStrip { RightToLeft = L.IsFa ? RightToLeft.Yes : RightToLeft.No };
         menu.Items.Add(L.T("menu.open"), null, (_, _) => OpenFlyout());
+        menu.Items.Add(L.T("menu.converter"), null, (_, _) => OpenConverter());
         menu.Items.Add(L.T("menu.settings"), null, (_, _) => OpenSettings());
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add(L.T("menu.exit"), null, (_, _) => System.Windows.Application.Current.Shutdown());
@@ -137,6 +139,17 @@ public sealed class TrayService : IDisposable
         var w = new SettingsWindow();
         _settings = w;
         w.Closed += (_, _) => _settings = null;
+        w.Show();
+        w.Activate();
+    }
+
+    public void OpenConverter()
+    {
+        _flyout?.Close();
+        if (_converter != null) { _converter.Activate(); return; }
+        var w = new ConverterWindow();
+        _converter = w;
+        w.Closed += (_, _) => _converter = null;
         w.Show();
         w.Activate();
     }

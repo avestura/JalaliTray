@@ -1,0 +1,114 @@
+<Window x:Class="JalaliTray.ConverterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:JalaliTray"
+        Title="{local:Loc conv.title}" Width="560" SizeToContent="Height" ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Bg}" Foreground="{DynamicResource Fg}"
+        FontFamily="Segoe UI, Tahoma" FontSize="13">
+    <Window.Resources>
+        <Style x:Key="Caption" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="{DynamicResource Muted}"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+        <Style x:Key="CardHeader" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+        <Style x:Key="Result" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="MinHeight" Value="44"/>
+            <Setter Property="Margin" Value="0,12,0,0"/>
+        </Style>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="14"/>
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="16">
+        <TextBlock Text="{local:Loc conv.hint}" Foreground="{DynamicResource Muted}" Margin="0,0,0,12" TextWrapping="Wrap"/>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Jalali -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource CardHeader}" Text="{local:Loc conv.jalali}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="48"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="64"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                            <TextBlock Style="{StaticResource Caption}" Text="{local:Loc conv.day}"/>
+                            <TextBox x:Name="JDay" TextAlignment="Center" MaxLength="2"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,6,0">
+                            <TextBlock Style="{StaticResource Caption}" Text="{local:Loc conv.month}"/>
+                            <ComboBox x:Name="JMonth"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Style="{StaticResource Caption}" Text="{local:Loc conv.year}"/>
+                            <TextBox x:Name="JYear" TextAlignment="Center" MaxLength="4"/>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock x:Name="JResult" Style="{StaticResource Result}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Bridge -->
+            <TextBlock Grid.Column="1" Text="&#xE8AB;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="20"
+                       Foreground="{DynamicResource Muted}" VerticalAlignment="Center" Margin="10,0"
+                       FlowDirection="LeftToRight"/>
+
+            <!-- Gregorian -->
+            <Border Grid.Column="2" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource CardHeader}" Text="{local:Loc conv.gregorian}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="48"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="64"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                            <TextBlock Style="{StaticResource Caption}" Text="{local:Loc conv.day}"/>
+                            <TextBox x:Name="GDay" TextAlignment="Center" MaxLength="2"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,6,0">
+                            <TextBlock Style="{StaticResource Caption}" Text="{local:Loc conv.month}"/>
+                            <ComboBox x:Name="GMonth"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Style="{StaticResource Caption}" Text="{local:Loc conv.year}"/>
+                            <TextBox x:Name="GYear" TextAlignment="Center" MaxLength="4"/>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock x:Name="GResult" Style="{StaticResource Result}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border BorderBrush="{DynamicResource Border}" BorderThickness="1,0,1,1" Padding="14,10">
+            <TextBlock x:Name="Summary" TextWrapping="Wrap"/>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+            <Button x:Name="TodayBtn" Padding="14,5" Margin="0,0,8,0"/>
+            <Button x:Name="NowruzBtn" Padding="14,5" Margin="0,0,8,0"/>
+            <Button x:Name="CopyBtn" Padding="14,5"/>
+        </StackPanel>
+    </StackPanel>
+</Window>
