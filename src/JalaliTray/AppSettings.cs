@@ -29,7 +29,6 @@ public sealed class AppSettings
     public int HijriOffset { get; set; }                   // -2..2 days
 
     // Events
-    public string ApiKey { get; set; } = "";
     public bool ShowHolidays { get; set; } = true;
     public bool ShowReligious { get; set; } = true;
     public bool ShowNational { get; set; } = true;

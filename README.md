@@ -8,7 +8,8 @@ Download the latest build from [Releases](https://github.com/avestura/JalaliTray
 - Day number rendered on the tray icon, updated at midnight
 - Calendar flyout with Jalali / Gregorian / Hijri dates, live clock and per-day events
 - Optional NTP time (`ntp.time.ir`): used by the app only, the Windows clock is not changed
-- Events from `api.time.ir` (needs your own `x-api-key`, set in Settings), cached locally, with a bundled offline fallback
+- Events from the public time.ir calendar API (no key needed), fetched a month at a time and cached locally, with a bundled offline fallback
+- Jalali ↔ Gregorian date converter window
 - Persian (default) or English UI, light/dark theme, start with Windows, icon font and colors
 
 ## Build
