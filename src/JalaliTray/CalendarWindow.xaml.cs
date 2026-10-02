@@ -61,6 +61,7 @@ public partial class CalendarWindow : Window
         KeyDown += (_, e) => { if (e.Key == Key.Escape) Close(); };
 
         Loaded += (_, _) => Position();
+        SizeChanged += (_, e) => { if (e.HeightChanged && IsLoaded) Position(); };
         Deactivated += (_, _) => { if (!_closing && !KeepOpen) Close(); };
         Closing += (_, _) => _closing = true;
         Closed += (_, _) => { _clock.Stop(); _cts?.Cancel(); };
@@ -72,14 +73,21 @@ public partial class CalendarWindow : Window
         Render();
     }
 
+    // Work area (in device pixels) of the screen the popup opened on; fixed so later resizes stay put.
+    System.Drawing.Rectangle _workArea;
+
+    // The popup sits in the bottom-right corner. When its height changes (a day with more events,
+    // events arriving late) the bottom edge stays put and the top moves, so it never slides under the taskbar.
     void Position()
     {
+        if (_workArea.IsEmpty)
+            _workArea = System.Windows.Forms.Screen.FromPoint(System.Windows.Forms.Cursor.Position).WorkingArea;
+
         var dpi = VisualTreeHelper.GetDpi(this);
-        var wa = System.Windows.Forms.Screen.FromPoint(System.Windows.Forms.Cursor.Position).WorkingArea;
-        double left = wa.Right / dpi.DpiScaleX - ActualWidth - 12;
-        double top = wa.Bottom / dpi.DpiScaleY - ActualHeight - 12;
-        Left = Math.Max(wa.Left / dpi.DpiScaleX, left);
-        Top = Math.Max(wa.Top / dpi.DpiScaleY, top);
+        double left = _workArea.Right / dpi.DpiScaleX - ActualWidth - 12;
+        double top = _workArea.Bottom / dpi.DpiScaleY - ActualHeight - 12;
+        Left = Math.Max(_workArea.Left / dpi.DpiScaleX, left);
+        Top = Math.Max(_workArea.Top / dpi.DpiScaleY, top);
     }
 
     void OnClock()
