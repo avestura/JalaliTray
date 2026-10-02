@@ -15,7 +15,7 @@ public partial class SettingsWindow : Window
         InitializeComponent();
         FlowDirection = L.IsFa ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
 
-        FontBox.ItemsSource = Fonts.SystemFontFamilies.Select(f => f.Source).OrderBy(s => s).ToList();
+        FontBox.ItemsSource = Fonts.SystemFontFamilies.Select(f => f.Source).Append(FontService.FamilyName).Distinct().OrderBy(s => s).ToList();
         HijriBox.ItemsSource = new[] { -2, -1, 0, 1, 2 };
         DataContext = _copy;
         PlaceFooter();
@@ -56,7 +56,7 @@ public partial class SettingsWindow : Window
         _copy.NtpServer = string.IsNullOrWhiteSpace(_copy.NtpServer) ? "ntp.time.ir" : _copy.NtpServer.Trim();
         _copy.NtpIntervalHours = Math.Clamp(_copy.NtpIntervalHours, 1, 168);
         _copy.HijriOffset = Math.Clamp(_copy.HijriOffset, -2, 2);
-        if (string.IsNullOrWhiteSpace(_copy.IconFont)) _copy.IconFont = "Segoe UI";
+        if (string.IsNullOrWhiteSpace(_copy.IconFont)) _copy.IconFont = FontService.FamilyName;
 
         // Force a fresh NTP sync against the (possibly changed) server.
         TimeService.Reset();

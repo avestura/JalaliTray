@@ -4,7 +4,7 @@
         WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True"
         SizeToContent="Height" Width="396" WindowStartupLocation="Manual"
         Background="{DynamicResource Bg}" Foreground="{DynamicResource Fg}"
-        FontFamily="Segoe UI, Tahoma" UseLayoutRounding="True">
+        FontFamily="{DynamicResource AppFont}" UseLayoutRounding="True">
     <Border BorderBrush="{DynamicResource Border}" BorderThickness="1" Padding="14,12,14,12">
         <StackPanel>
             <Grid>

@@ -13,7 +13,7 @@ public sealed class AppSettings
     public bool StartWithWindows { get; set; }
 
     // Tray icon
-    public string IconFont { get; set; } = "Segoe UI";
+    public string IconFont { get; set; } = "Vazirmatn";
     public bool IconBold { get; set; } = true;
     public string IconBackground { get; set; } = "#1E6FD9";
     public string IconForeground { get; set; } = "#FFFFFF";

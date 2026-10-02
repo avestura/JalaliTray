@@ -5,7 +5,7 @@
         Title="{local:Loc conv.title}" Width="560" SizeToContent="Height" ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource Bg}" Foreground="{DynamicResource Fg}"
-        FontFamily="Segoe UI, Tahoma" FontSize="13">
+        FontFamily="{DynamicResource AppFont}" FontSize="13">
     <Window.Resources>
         <Style x:Key="Caption" TargetType="TextBlock">
             <Setter Property="FontSize" Value="11"/>

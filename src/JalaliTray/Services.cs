@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -44,6 +46,7 @@ public static class ThemeService
     public static void Apply(Application app, string theme)
     {
         bool dark = theme == "Dark" || (theme == "System" && WindowsUsesDark());
+        FontService.Apply(app);
         app.ThemeMode = theme switch { "Light" => ThemeMode.Light, "Dark" => ThemeMode.Dark, _ => ThemeMode.System };
 
         void Set(string key, string hex) =>
@@ -61,6 +64,45 @@ public static class ThemeService
             Set("Border", "#DADADA"); Set("Accent", "#1E6FD9"); Set("Holiday", "#D32F2F");
             Set("Hover", "#EAEAEA"); Set("OnAccent", "#FFFFFF");
         }
+    }
+}
+
+/// <summary>Vazirmatn (SIL OFL) is embedded in the exe; no installation needed.</summary>
+public static class FontService
+{
+    public const string FamilyName = "Vazirmatn";
+    static System.Drawing.Text.PrivateFontCollection? _gdi;
+
+    public static System.Windows.Media.FontFamily Wpf { get; } =
+        new(new Uri("pack://application:,,,/"), "./Fonts/#Vazirmatn");
+
+    /// <summary>Persian UI uses Vazirmatn; the English UI keeps Segoe UI.</summary>
+    public static void Apply(Application app) =>
+        app.Resources["AppFont"] = Program.Settings.Language == "en"
+            ? new System.Windows.Media.FontFamily("Segoe UI")
+            : Wpf;
+
+    /// <summary>GDI+ family for the tray icon renderer, or null when the name isn't the embedded font.</summary>
+    public static System.Drawing.FontFamily? Gdi(string name)
+    {
+        if (!name.Equals(FamilyName, StringComparison.OrdinalIgnoreCase)) return null;
+        if (_gdi == null)
+        {
+            var pfc = new System.Drawing.Text.PrivateFontCollection();
+            foreach (var face in new[] { "Regular", "Bold" })
+            {
+                var info = Application.GetResourceStream(new Uri($"pack://application:,,,/Fonts/Vazirmatn-{face}.ttf"));
+                using var stream = info.Stream;
+                var bytes = new byte[stream.Length];
+                stream.ReadExactly(bytes);
+                // The collection needs the memory to stay valid for the life of the process.
+                var ptr = Marshal.AllocCoTaskMem(bytes.Length);
+                Marshal.Copy(bytes, 0, ptr, bytes.Length);
+                pfc.AddMemoryFont(ptr, bytes.Length);
+            }
+            _gdi = pfc;
+        }
+        return _gdi.Families.FirstOrDefault();
     }
 }
 
@@ -89,7 +131,8 @@ public static class IconRenderer
             Font font;
             while (true)
             {
-                font = new Font(fontName, fontSize, style, GraphicsUnit.Pixel);
+                var family = FontService.Gdi(fontName);
+                font = family != null ? new Font(family, fontSize, style, GraphicsUnit.Pixel) : new Font(fontName, fontSize, style, GraphicsUnit.Pixel);
                 if (g.MeasureString(text, font, PointF.Empty, format).Width <= size - 2 || fontSize <= 6) break;
                 font.Dispose();
                 fontSize -= 1;

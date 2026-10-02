@@ -16,4 +16,9 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Resource Include="Fonts/*.ttf" />
+    <None Include="Fonts/OFL.txt" />
+  </ItemGroup>
+
 </Project>
