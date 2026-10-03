@@ -125,6 +125,9 @@ public static class IconRenderer
                 Alignment = StringAlignment.Center,
                 LineAlignment = StringAlignment.Center,
             };
+            // GenericTypographic sets LineLimit, which drops any line taller than the layout box.
+            // Vazirmatn's line height (1.56 em) is taller than the icon, so nothing would be drawn.
+            format.FormatFlags &= ~StringFormatFlags.LineLimit;
             System.Drawing.FontStyle style = bold ? System.Drawing.FontStyle.Bold : System.Drawing.FontStyle.Regular;
 
             float fontSize = size * 0.74f;
