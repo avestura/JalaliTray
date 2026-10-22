@@ -4,6 +4,8 @@ A small Windows tray app that shows today's Jalali (Shamsi) day on the tray icon
 
 Download the latest build from [Releases](https://github.com/avestura/JalaliTray/releases/latest).
 
+A GNOME Shell top bar extension port of JalaliTray is available at here: [dcenterd/JalaliTray4Gnome](https://github.com/dcenterd/JalaliTray4Gnome)
+
 ## Features
 - Day number rendered on the tray icon, updated at midnight
 - Calendar flyout with Jalali / Gregorian / Hijri dates, live clock and per-day events
